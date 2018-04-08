@@ -5,6 +5,7 @@ import 'package:http/http.dart' as http;
 
 import 'member.dart';
 import 'strings.dart';
+import 'memberwidget.dart';
 
 class FirstFlutterState extends State<FirstStateFulWidget> {
   //_ at the beginning make the members private to this class.
@@ -23,9 +24,8 @@ class FirstFlutterState extends State<FirstStateFulWidget> {
   Widget build(BuildContext context) {
     //A Scaffold is a container for material design widgets. It acts as the root of a widget hierarchy.
     return new Scaffold(
-      //Create an app bar
-        appBar: new AppBar(
-            title: new Text(Strings.appTitle)),
+        //Create an app bar
+        appBar: new AppBar(title: new Text(Strings.appTitle)),
         //Create a body with list view which acts as a RecyclerView in Android, UITableView in iOS
         body: new ListView.builder(
             itemCount: _members.length,
@@ -34,43 +34,73 @@ class FirstFlutterState extends State<FirstStateFulWidget> {
                 return new Divider(); //To add a divider between list items
               final index = position ~/ 2;
               return _buildRow(index);
-            }
-        ));
+            }));
   }
 
   /**
    * Create a new list item
    */
   Widget _buildRow(int i) {
-    return new Padding(padding: const EdgeInsets.all(16.0),
+    return new Padding(
+        padding: const EdgeInsets.all(16.0),
         child: new ListTile(
-            title: new Text("${ _members[i].login }", style: _biggerFont,),
-            leading: new CircleAvatar( //This makes the avatar image to show before the title
-              backgroundColor: Colors.pinkAccent,
-              backgroundImage: new NetworkImage(_members[i].avatarUrl),
-            )
-        )
-    );
+          title: new Text(
+            "${ _members[i].login }",
+            style: _biggerFont,
+          ),
+          leading: new CircleAvatar(
+            //This makes the avatar image to show before the title
+            backgroundColor: Colors.pinkAccent,
+            backgroundImage: new NetworkImage(_members[i].avatarUrl),
+          ),
+          onTap: () {
+            _pushMember(_members[i]);
+          },
+        ));
   }
 
-  /**
-   * Load data from the network
-   */
+  ///Load data from the network
   _loadData() async {
     //async keyword tells that it is an asynchronous method
-    String dataURL = "https://api.github.com/orgs/google/members"; //Got members from Google
-    http.Response response = await http.get(
-        dataURL); //await indicates it is a blocking call.
-    setState(() { //setState runs synchronously in the main thread after the response is received in the above statement.
+    String dataURL =
+        "https://api.github.com/orgs/google/members"; //Got members from Google
+    http.Response response =
+        await http.get(dataURL); //await indicates it is a blocking call.
+    setState(() {
+      //setState runs synchronously in the main thread after the response is received in the above statement.
 
       final membersJSON = JSON.decode(response
           .body); //Took each member in the response and add it to the _members list as Dart Map type by default
       for (var memberJSON in membersJSON) {
-        final member = new Member(
-            memberJSON["login"], memberJSON["avatar_url"]);
+        final member =
+            new Member(memberJSON["login"], memberJSON["avatar_url"]);
         _members.add(member);
       }
     });
+  }
+
+  _pushMember(Member member) {
+    /*
+    Navigator.of(context).push(
+        new MaterialPageRoute(
+            builder: (context) => new MemberWidget(member)
+        )
+    );*/
+    //Navigation in Flutter is based on Routes
+    Navigator.of(context).push(new PageRouteBuilder(//Push a PageRoute onto the stack
+        opaque: true,
+        transitionDuration: const Duration(milliseconds: 1000),
+        pageBuilder: (BuildContext context, _, __) {
+          return new MemberWidget(member);
+        },
+        transitionsBuilder: (_, Animation<double> animation, __, Widget child) {//The transitionsBuilder is used to create fade and rotation transitions when showing the new route
+          return new FadeTransition(
+            opacity: animation,
+            child: new RotationTransition(
+                turns: new Tween(begin: 0.0, end: 1.0).animate(animation),
+                child: child),
+          );
+        }));
   }
 }
 
