@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'strings.dart';
+
 import 'firstFlutter.dart';
+import 'strings.dart';
 
 void main() => runApp(new FirstFlutterApp());
 

@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 import 'member.dart';
-import 'strings.dart';
 import 'memberwidget.dart';
+import 'strings.dart';
 
 class FirstFlutterState extends State<FirstStateFulWidget> {
   //_ at the beginning make the members private to this class.
@@ -86,14 +86,14 @@ class FirstFlutterState extends State<FirstStateFulWidget> {
             builder: (context) => new MemberWidget(member)
         )
     );*/
-    //Navigation in Flutter is based on Routes
-    Navigator.of(context).push(new PageRouteBuilder(//Push a PageRoute onto the stack
+
+    Navigator.of(context).push(new PageRouteBuilder(
         opaque: true,
         transitionDuration: const Duration(milliseconds: 1000),
         pageBuilder: (BuildContext context, _, __) {
           return new MemberWidget(member);
         },
-        transitionsBuilder: (_, Animation<double> animation, __, Widget child) {//The transitionsBuilder is used to create fade and rotation transitions when showing the new route
+        transitionsBuilder: (_, Animation<double> animation, __, Widget child) {
           return new FadeTransition(
             opacity: animation,
             child: new RotationTransition(
