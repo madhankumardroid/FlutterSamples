@@ -1,11 +1,10 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 import 'member.dart';
 import 'memberwidget.dart';
 import 'strings.dart';
+import 'dart:convert';
 
 class FirstFlutterState extends State<FirstStateFulWidget> {
   //_ at the beginning make the members private to this class.
@@ -69,7 +68,7 @@ class FirstFlutterState extends State<FirstStateFulWidget> {
     setState(() {
       //setState runs synchronously in the main thread after the response is received in the above statement.
 
-      final membersJSON = JSON.decode(response
+      final membersJSON = jsonDecode(response
           .body); //Took each member in the response and add it to the _members list as Dart Map type by default
       for (var memberJSON in membersJSON) {
         final member =
